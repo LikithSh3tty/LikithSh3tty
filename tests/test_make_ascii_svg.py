@@ -11,9 +11,11 @@ from scripts.make_ascii_svg import (
 )
 
 
-def test_white_maps_to_space_and_black_to_densest():
-    assert brightness_to_glyph(255) == " "
-    assert brightness_to_glyph(0) == RAMP[-1]
+def test_black_maps_to_space_and_white_to_densest():
+    """Light glyphs on a dark panel: ink IS brightness, so bright pixels need
+    dense glyphs. The reverse renders the subject as a negative."""
+    assert brightness_to_glyph(0) == " "
+    assert brightness_to_glyph(255) == RAMP[-1]
 
 
 def test_ramp_starts_with_space():
@@ -27,8 +29,9 @@ def test_image_to_rows_returns_exact_grid():
     assert all(len(r) == 100 for r in rows)
 
 
-def test_blank_white_image_produces_only_spaces():
-    img = Image.new("L", (200, 200), color=255)
+def test_blank_black_image_produces_only_spaces():
+    """The cutout background is black, so it must vanish entirely."""
+    img = Image.new("L", (200, 200), color=0)
     assert set("".join(image_to_rows(img, 100, 53))) == {" "}
 
 

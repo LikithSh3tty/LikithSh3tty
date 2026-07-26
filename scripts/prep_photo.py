@@ -1,12 +1,21 @@
-"""Photo -> isolated, contrast-boosted, head-cropped grayscale PNG.
+"""Photo -> isolated, tonally-normalised grayscale PNG on black.
 
-Run once per photo; needs requirements-art.txt. A flatly-lit face converts to a dark,
-unreadable blob, so this removes the background, crops to head and collar, boosts
-local contrast, and trims the empty margin before the ASCII step ever sees it.
+Run once per photo; needs requirements-art.txt.
 
     python -m scripts.prep_photo [source.png] [x y w h]
 
-Passing an explicit crop box overrides face detection.
+Passing an explicit crop box overrides face detection (needed for profile shots
+and anything Haar cannot find a frontal face in).
+
+Two things drive the design:
+
+1. The art is light glyphs on a dark panel, so ink reads as brightness. The ramp
+   maps bright -> dense, which means the background must be BLACK to fall off the
+   blank end of it.
+2. Photos are not reliably exposed. A night shot's subject can sit entirely in the
+   bottom third of the range and render as nothing at all. So the subject's own
+   tonal range is normalised to span the ramp, with a floor that keeps even its
+   darkest parts faintly inked and separable from the background.
 """
 import sys
 
@@ -18,17 +27,19 @@ from rembg import remove
 SRC = sys.argv[1] if len(sys.argv) > 1 else "source-photo.png"
 OUT = "source-prepped.png"
 
+FLOOR = 58   # darkest glyph level the subject is allowed to reach (0 = invisible)
+GAMMA = 0.85 # <1 lifts mid-tones so faces do not clump at one ramp position
+
 # 1. Cut the subject out of the background.
 cut = remove(Image.open(SRC).convert("RGBA"))
-alpha = np.array(cut)[:, :, 3]  # exact subject mask, independent of tonal edits
+alpha = np.array(cut)[:, :, 3]
 
-# 2. Composite onto pure white so the background maps to the blank end of the ramp.
-white = Image.new("RGBA", cut.size, (255, 255, 255, 255))
-flat = Image.alpha_composite(white, cut).convert("RGB")
-arr = cv2.cvtColor(np.array(flat), cv2.COLOR_RGB2BGR)
-gray = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+# 2. Composite onto black (see module docstring).
+black = Image.new("RGBA", cut.size, (0, 0, 0, 255))
+flat = Image.alpha_composite(black, cut).convert("RGB")
+gray = cv2.cvtColor(np.array(flat), cv2.COLOR_RGB2GRAY)
 
-# 3. Find the face and crop to head + collar.
+# 3. Crop to the head, by face detection or an explicit box.
 if len(sys.argv) >= 6:
     x, y, w, h = (int(v) for v in sys.argv[2:6])
 else:
@@ -41,49 +52,47 @@ else:
             "No face detected. Re-run with an explicit crop box:\n"
             "  python -m scripts.prep_photo <src> <x> <y> <w> <h>"
         )
-    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])  # largest face
+    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
 
 x0 = max(0, int(x - 0.92 * w))
-x1 = min(arr.shape[1], int(x + w + 0.92 * w))
+x1 = min(gray.shape[1], int(x + w + 0.92 * w))
 y0 = max(0, int(y - 0.70 * h))
-y1 = min(arr.shape[0], int(y + h + 1.15 * h))
-crop = gray[y0:y1, x0:x1]
-crop_alpha = alpha[y0:y1, x0:x1]
+y1 = min(gray.shape[0], int(y + h + 1.15 * h))
+crop, crop_a = gray[y0:y1, x0:x1], alpha[y0:y1, x0:x1]
 
-# 4. CLAHE gives a flatly-lit face real highlights and shadows.
+# 4. CLAHE for local contrast, so a flatly-lit face gains highlights and shadows.
 crop = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8)).apply(crop)
 
-# 5. Trim to the subject, then re-centre in a square.
-# Empty margin is not free: it converts to blank glyphs and leaves the portrait
-# floating in dead space inside its panel. The alpha mask locates the subject
-# exactly, so trimming to it makes the art fill the frame.
-ys, xs = np.where(crop_alpha > 12)
+# 5. Trim to the subject. Empty margin converts to blank glyphs and leaves the
+# portrait floating in dead space inside its panel.
+ys, xs = np.where(crop_a > 12)
 if len(xs):
-    margin = 4
-    tx0, tx1 = max(0, xs.min() - margin), min(crop.shape[1], xs.max() + 1 + margin)
-    ty0, ty1 = max(0, ys.min() - margin), min(crop.shape[0], ys.max() + 1 + margin)
-    crop = crop[ty0:ty1, tx0:tx1]
+    m = 4
+    tx0, tx1 = max(0, xs.min() - m), min(crop.shape[1], xs.max() + 1 + m)
+    ty0, ty1 = max(0, ys.min() - m), min(crop.shape[0], ys.max() + 1 + m)
+    crop, crop_a = crop[ty0:ty1, tx0:tx1], crop_a[ty0:ty1, tx0:tx1]
 
+# 6. Pad to square so the aspect-aware grid has a balanced frame to fill.
 side = max(crop.shape)
-square = np.full((side, side), 255, np.uint8)
+sq = np.zeros((side, side), np.uint8)
+sq_a = np.zeros((side, side), np.uint8)
 oy, ox = (side - crop.shape[0]) // 2, (side - crop.shape[1]) // 2
-square[oy:oy + crop.shape[0], ox:ox + crop.shape[1]] = crop
-crop = square
+sq[oy:oy + crop.shape[0], ox:ox + crop.shape[1]] = crop
+sq_a[oy:oy + crop.shape[0], ox:ox + crop.shape[1]] = crop_a
 
-# 6. Lift the mid-tones. Skin sits mid-gray, which lands on the ramp's dense
-# glyphs and turns the face into a solid blob; gamma < 1 moves it onto sparser
-# glyphs so only hair, shadows and clothing stay dark. 0.75 was chosen by
-# comparing 1.0 / 0.75 / 0.55 — lower than this washes the features out.
-GAMMA = 0.75
-crop = np.power(crop.astype(np.float32) / 255.0, GAMMA) * 255.0
+# 7. Normalise the SUBJECT's own range to [FLOOR, 255]; force background to 0.
+# Percentiles rather than min/max so a single specular highlight cannot squash
+# everything else into the bottom of the range.
+subject = sq_a > 12
+if subject.any():
+    vals = sq[subject].astype(np.float32)
+    lo, hi = np.percentile(vals, 2), np.percentile(vals, 98)
+    scaled = (sq.astype(np.float32) - lo) / max(1.0, hi - lo)
+    scaled = np.clip(scaled, 0.0, 1.0)
+    scaled = np.power(scaled, GAMMA)
+    sq = np.where(subject, FLOOR + scaled * (255 - FLOOR), 0).astype(np.uint8)
 
-# 7. Stretch the contrast. Gamma alone leaves the whole face sitting in a narrow
-# tonal band, so it converts to one near-uniform block of glyphs and reads as a
-# filled silhouette. Expanding [LO, HI] to the full range is what separates eye
-# sockets, brows and mouth from cheeks. Chosen by rendering the candidates side
-# by side; without the stretch only ~195 cells land on dense glyphs, with it 377.
-LO, HI = 40, 215
-crop = np.clip((crop - LO) * 255.0 / (HI - LO), 0, 255).astype(np.uint8)
-
-Image.fromarray(crop).save(OUT)
-print(f"wrote {OUT}  {crop.shape[1]}x{crop.shape[0]}  (face at {x},{y},{w},{h})")
+Image.fromarray(sq).save(OUT)
+ink = subject.mean() * 100
+print(f"wrote {OUT}  {sq.shape[1]}x{sq.shape[0]}  subject={ink:.0f}% of frame  "
+      f"(crop box {x},{y},{w},{h})")

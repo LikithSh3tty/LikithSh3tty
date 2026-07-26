@@ -10,8 +10,15 @@ PAD = 16
 
 
 def brightness_to_glyph(value: int) -> str:
-    """255 (white) -> ' ', 0 (black) -> densest glyph."""
-    idx = int((255 - value) / 256 * len(RAMP))
+    """0 (black) -> ' ', 255 (white) -> densest glyph.
+
+    The panel is dark and the glyphs are light, so ink reads as brightness: the
+    more of a cell a glyph fills, the lighter it looks. Mapping bright pixels to
+    dense glyphs is what keeps tones the right way round. The opposite mapping
+    (dark -> dense, as you would use for black ink on white paper) renders the
+    subject as a photographic negative.
+    """
+    idx = int(value / 256 * len(RAMP))
     return RAMP[min(idx, len(RAMP) - 1)]
 
 
@@ -53,8 +60,18 @@ def build_svg(rows: list[str]) -> str:
     )
     for i, row in enumerate(rows):
         safe = row.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        # Runs of plain spaces collapse when an SVG is rendered through an <img>,
+        # which shortens every row and squeezes the art toward the left. No-break
+        # spaces are never collapsed and carry the same advance in a monospace
+        # face. textLength then pins each row to the exact grid width, so
+        # alignment cannot drift with whatever font the viewer happens to resolve.
+        safe = safe.replace(" ", " ")
         y = PAD + (i + 1) * CHAR_H
-        out.append(f'    <text x="{PAD}" y="{y}" clip-path="url(#w{i})">{safe}</text>\n')
+        out.append(
+            f'    <text x="{PAD}" y="{y}" textLength="{grid_w}" '
+            f'lengthAdjust="spacing" xml:space="preserve" '
+            f'clip-path="url(#w{i})">{safe}</text>\n'
+        )
     out.append("  </g>\n")
     out.append(panel_close())
     return "".join(out)
