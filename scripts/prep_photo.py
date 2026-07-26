@@ -1,8 +1,8 @@
 """Photo -> isolated, contrast-boosted, head-cropped grayscale PNG.
 
 Run once per photo; needs requirements-art.txt. A flatly-lit face converts to a dark,
-unreadable blob, so this removes the background, crops to head and collar, and boosts
-local contrast before the ASCII step ever sees it.
+unreadable blob, so this removes the background, crops to head and collar, boosts
+local contrast, and trims the empty margin before the ASCII step ever sees it.
 
     python -m scripts.prep_photo [source.png] [x y w h]
 
@@ -20,6 +20,7 @@ OUT = "source-prepped.png"
 
 # 1. Cut the subject out of the background.
 cut = remove(Image.open(SRC).convert("RGBA"))
+alpha = np.array(cut)[:, :, 3]  # exact subject mask, independent of tonal edits
 
 # 2. Composite onto pure white so the background maps to the blank end of the ramp.
 white = Image.new("RGBA", cut.size, (255, 255, 255, 255))
@@ -42,20 +43,34 @@ else:
         )
     x, y, w, h = max(faces, key=lambda f: f[2] * f[3])  # largest face
 
-# Expand to a roughly square crop: 70% of face height above (hair), 115% below
-# (chin -> collar), 92% each side. Square matters because the ASCII grid is
-# rendered in 6x10px character cells — a tall crop would have to be stretched
-# horizontally to fill a wide grid, and a stretched face reads as wrong.
 x0 = max(0, int(x - 0.92 * w))
 x1 = min(arr.shape[1], int(x + w + 0.92 * w))
 y0 = max(0, int(y - 0.70 * h))
 y1 = min(arr.shape[0], int(y + h + 1.15 * h))
 crop = gray[y0:y1, x0:x1]
+crop_alpha = alpha[y0:y1, x0:x1]
 
 # 4. CLAHE gives a flatly-lit face real highlights and shadows.
 crop = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8)).apply(crop)
 
-# 5. Lift the mid-tones. Skin sits mid-gray, which lands on the ramp's dense
+# 5. Trim to the subject, then re-centre in a square.
+# Empty margin is not free: it converts to blank glyphs and leaves the portrait
+# floating in dead space inside its panel. The alpha mask locates the subject
+# exactly, so trimming to it makes the art fill the frame.
+ys, xs = np.where(crop_alpha > 12)
+if len(xs):
+    margin = 4
+    tx0, tx1 = max(0, xs.min() - margin), min(crop.shape[1], xs.max() + 1 + margin)
+    ty0, ty1 = max(0, ys.min() - margin), min(crop.shape[0], ys.max() + 1 + margin)
+    crop = crop[ty0:ty1, tx0:tx1]
+
+side = max(crop.shape)
+square = np.full((side, side), 255, np.uint8)
+oy, ox = (side - crop.shape[0]) // 2, (side - crop.shape[1]) // 2
+square[oy:oy + crop.shape[0], ox:ox + crop.shape[1]] = crop
+crop = square
+
+# 6. Lift the mid-tones. Skin sits mid-gray, which lands on the ramp's dense
 # glyphs and turns the face into a solid blob; gamma < 1 moves it onto sparser
 # glyphs so only hair, shadows and clothing stay dark. 0.75 was chosen by
 # comparing 1.0 / 0.75 / 0.55 — lower than this washes the features out.

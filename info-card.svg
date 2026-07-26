@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="490" height="280"
-     viewBox="0 0 490 280" role="img" aria-label="info card">
-  <rect x="0.5" y="0.5" width="489" height="279" rx="10"
+<svg xmlns="http://www.w3.org/2000/svg" width="490" height="305"
+     viewBox="0 0 490 305" role="img" aria-label="info card">
+  <rect x="0.5" y="0.5" width="489" height="304" rx="10"
         fill="#0d1117" stroke="#30363d"/>
   <style>
     .ln { opacity: 0; animation: in .38s ease-out forwards; }
@@ -8,24 +8,30 @@
                     to   { opacity: 1; transform: translateX(0); } }
   </style>
   <g font-family="SFMono-Regular,Consolas,Liberation Mono,monospace" font-size="12">
-    <text class="ln" style="animation-delay:0s" x="22" y="41" fill="#39d353" font-weight="600">likith@github</text>
+    <text class="ln" style="animation-delay:0s" x="22" y="41" font-weight="600"><tspan fill="#7ee787">likith</tspan><tspan fill="#8b949e">@</tspan><tspan fill="#79c0ff">github</tspan></text>
     <text class="ln" style="animation-delay:.06s" x="22" y="60" fill="#8b949e">────────────────────────────────────────────</text>
-    <text class="ln" style="animation-delay:0.12s" x="22" y="79" fill="#39d353">Now</text>
+    <text class="ln" style="animation-delay:0.12s" x="22" y="79" fill="#79c0ff">Now</text>
     <text class="ln" style="animation-delay:0.12s" x="102" y="79" fill="#c9d1d9">M.Sc. Artificial Intelligence &amp; ML</text>
     <text class="ln" style="animation-delay:0.18s" x="102" y="98" fill="#c9d1d9">CHRIST (Deemed to be University), Bengaluru</text>
-    <text class="ln" style="animation-delay:0.24s" x="22" y="117" fill="#39d353">Role</text>
+    <text class="ln" style="animation-delay:0.24s" x="22" y="117" fill="#d2a8ff">Role</text>
     <text class="ln" style="animation-delay:0.24s" x="102" y="117" fill="#c9d1d9">Fullstack + AI builder</text>
-    <text class="ln" style="animation-delay:0.30s" x="22" y="136" fill="#39d353">Learning</text>
+    <text class="ln" style="animation-delay:0.30s" x="22" y="136" fill="#7ee787">Learning</text>
     <text class="ln" style="animation-delay:0.30s" x="102" y="136" fill="#c9d1d9">LangGraph · agentic AI · applied ML</text>
-    <text class="ln" style="animation-delay:0.36s" x="22" y="155" fill="#39d353">Stack</text>
+    <text class="ln" style="animation-delay:0.36s" x="22" y="155" fill="#ffa657">Stack</text>
     <text class="ln" style="animation-delay:0.36s" x="102" y="155" fill="#c9d1d9">React · JavaScript · Python · FastAPI</text>
     <text class="ln" style="animation-delay:0.42s" x="102" y="174" fill="#c9d1d9">Firebase/Supabase · LangChain/LangGraph · n8n</text>
-    <text class="ln" style="animation-delay:0.48s" x="22" y="193" fill="#39d353">Shipped</text>
+    <text class="ln" style="animation-delay:0.48s" x="22" y="193" fill="#e3b341">Shipped</text>
     <text class="ln" style="animation-delay:0.48s" x="102" y="193" fill="#c9d1d9">CloudNest · Agenvo · Grid0pt</text>
-    <text class="ln" style="animation-delay:0.54s" x="22" y="212" fill="#39d353">Contact</text>
+    <text class="ln" style="animation-delay:0.54s" x="22" y="212" fill="#ff7b72">Contact</text>
     <text class="ln" style="animation-delay:0.54s" x="102" y="212" fill="#c9d1d9">likithshetty188@gmail.com</text>
-    <text class="ln" style="animation-delay:0.60s" x="22" y="231" fill="#39d353">Ethos</text>
+    <text class="ln" style="animation-delay:0.60s" x="22" y="231" fill="#d2a8ff">Ethos</text>
     <text class="ln" style="animation-delay:0.60s" x="102" y="231" fill="#c9d1d9">Polished, end-to-end projects,</text>
     <text class="ln" style="animation-delay:0.66s" x="102" y="250" fill="#c9d1d9">shipped alongside coursework</text>
   </g>
+  <rect class="ln" style="animation-delay:0.72s" x="22" y="273" width="14" height="10" rx="2" fill="#ff7b72"/>
+  <rect class="ln" style="animation-delay:0.72s" x="42" y="273" width="14" height="10" rx="2" fill="#ffa657"/>
+  <rect class="ln" style="animation-delay:0.72s" x="62" y="273" width="14" height="10" rx="2" fill="#e3b341"/>
+  <rect class="ln" style="animation-delay:0.72s" x="82" y="273" width="14" height="10" rx="2" fill="#7ee787"/>
+  <rect class="ln" style="animation-delay:0.72s" x="102" y="273" width="14" height="10" rx="2" fill="#79c0ff"/>
+  <rect class="ln" style="animation-delay:0.72s" x="122" y="273" width="14" height="10" rx="2" fill="#d2a8ff"/>
 </svg>
