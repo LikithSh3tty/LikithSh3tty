@@ -370,8 +370,8 @@
   <rect class="d" style="animation-delay:0.648s" x="764" y="76" width="11" height="11" rx="2" fill="#0e4429"><title>2 on 2026-07-22</title></rect>
   <rect class="d" style="animation-delay:0.660s" x="764" y="90" width="11" height="11" rx="2" fill="#0e4429"><title>4 on 2026-07-23</title></rect>
   <rect class="d" style="animation-delay:0.672s" x="764" y="104" width="11" height="11" rx="2" fill="#26a641"><title>17 on 2026-07-24</title></rect>
-  <rect class="d" style="animation-delay:0.684s" x="764" y="118" width="11" height="11" rx="2" fill="#39d353"><title>22 on 2026-07-25</title></rect>
-  <rect class="d" style="animation-delay:0.624s" x="778" y="34" width="11" height="11" rx="2" fill="#39d353"><title>29 on 2026-07-26</title></rect>
+  <rect class="d" style="animation-delay:0.684s" x="764" y="118" width="11" height="11" rx="2" fill="#26a641"><title>22 on 2026-07-25</title></rect>
+  <rect class="d" style="animation-delay:0.624s" x="778" y="34" width="11" height="11" rx="2" fill="#39d353"><title>31 on 2026-07-26</title></rect>
   <g font-family="SFMono-Regular,Consolas,monospace" font-size="9" fill="#8b949e">
     <text x="50" y="26">Jul</text>
     <text x="64" y="26">Aug</text>
@@ -396,5 +396,5 @@
   <rect class="lg" x="762" y="148" width="11" height="11" rx="2" fill="#006d32"/>
   <rect class="lg" x="776" y="148" width="11" height="11" rx="2" fill="#26a641"/>
   <rect class="lg" x="790" y="148" width="11" height="11" rx="2" fill="#39d353"/>
-  <text x="20" y="157" font-family="SFMono-Regular,Consolas,monospace" font-size="11" fill="#c9d1d9">125 contributions in the last year · 8-day longest streak</text>
+  <text x="20" y="157" font-family="SFMono-Regular,Consolas,monospace" font-size="11" fill="#c9d1d9">127 contributions in the last year · 8-day longest streak</text>
 </svg>
