@@ -1812,7 +1812,7 @@
   },
   {
    "date": "2026-07-24",
-   "level": 3,
+   "level": 2,
    "count": 17
   },
   {
@@ -1823,16 +1823,16 @@
   {
    "date": "2026-07-26",
    "level": 4,
-   "count": 33
+   "count": 35
   }
  ],
  "stats": {
-  "total": 129,
+  "total": 131,
   "current_streak": 8,
   "longest_streak": 8,
   "best_day": {
    "date": "2026-07-26",
-   "count": 33
+   "count": 35
   }
  }
 }
