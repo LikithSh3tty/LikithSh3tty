@@ -17,7 +17,7 @@ USER, HOST = "likith", "github"
 ROWS = [
     (BLUE, "Now", "M.Sc. Artificial Intelligence & ML"),
     (None, "", "CHRIST (Deemed to be University), Bengaluru"),
-    (PURPLE, "Role", "Fullstack + AI builder"),
+    (PURPLE, "Role", "AI Developer · ML Engineer · Fullstack"),
     (GREEN, "Learning", "LangGraph · agentic AI · applied ML"),
     (ORANGE, "Stack", "React · JavaScript · Python · FastAPI"),
     (None, "", "Firebase/Supabase · LangChain/LangGraph · n8n"),
