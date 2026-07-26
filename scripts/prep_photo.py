@@ -75,7 +75,15 @@ crop = square
 # glyphs so only hair, shadows and clothing stay dark. 0.75 was chosen by
 # comparing 1.0 / 0.75 / 0.55 — lower than this washes the features out.
 GAMMA = 0.75
-crop = (np.power(crop.astype(np.float32) / 255.0, GAMMA) * 255).astype(np.uint8)
+crop = np.power(crop.astype(np.float32) / 255.0, GAMMA) * 255.0
+
+# 7. Stretch the contrast. Gamma alone leaves the whole face sitting in a narrow
+# tonal band, so it converts to one near-uniform block of glyphs and reads as a
+# filled silhouette. Expanding [LO, HI] to the full range is what separates eye
+# sockets, brows and mouth from cheeks. Chosen by rendering the candidates side
+# by side; without the stretch only ~195 cells land on dense glyphs, with it 377.
+LO, HI = 40, 215
+crop = np.clip((crop - LO) * 255.0 / (HI - LO), 0, 255).astype(np.uint8)
 
 Image.fromarray(crop).save(OUT)
 print(f"wrote {OUT}  {crop.shape[1]}x{crop.shape[0]}  (face at {x},{y},{w},{h})")
