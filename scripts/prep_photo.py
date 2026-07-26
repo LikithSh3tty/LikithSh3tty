@@ -55,5 +55,12 @@ crop = gray[y0:y1, x0:x1]
 # 4. CLAHE gives a flatly-lit face real highlights and shadows.
 crop = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8)).apply(crop)
 
+# 5. Lift the mid-tones. Skin sits mid-gray, which lands on the ramp's dense
+# glyphs and turns the face into a solid blob; gamma < 1 moves it onto sparser
+# glyphs so only hair, shadows and clothing stay dark. 0.75 was chosen by
+# comparing 1.0 / 0.75 / 0.55 — lower than this washes the features out.
+GAMMA = 0.75
+crop = (np.power(crop.astype(np.float32) / 255.0, GAMMA) * 255).astype(np.uint8)
+
 Image.fromarray(crop).save(OUT)
 print(f"wrote {OUT}  {crop.shape[1]}x{crop.shape[0]}  (face at {x},{y},{w},{h})")
