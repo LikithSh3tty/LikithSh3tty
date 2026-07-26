@@ -2,7 +2,7 @@
 
 <h3><code>likith@github ~ $ ./contributions.sh</code></h3>
 
-<img src="./contrib-heatmap.svg" width="860" alt="Contribution heatmap" />
+<img src="./contrib-heatmap.svg?v=2" width="860" alt="Contribution heatmap" />
 
 <br><br>
 
@@ -10,8 +10,8 @@
 
 <table>
   <tr>
-    <td valign="top"><img src="./ascii-portrait.svg" width="370" alt="ASCII portrait" /></td>
-    <td valign="top"><img src="./info-card.svg" width="490" alt="Info card" /></td>
+    <td valign="top"><img src="./ascii-portrait.svg?v=2" width="370" alt="ASCII portrait" /></td>
+    <td valign="top"><img src="./info-card.svg?v=2" width="490" alt="Info card" /></td>
   </tr>
 </table>
 
