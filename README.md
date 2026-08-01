@@ -15,4 +15,27 @@
   </tr>
 </table>
 
+<br>
+
+<h3><code>likith@github ~ $ cat about.txt</code></h3>
+
+<p>
+  Likith Shetty — M.Sc. AI &amp; ML at CHRIST University, Bengaluru.<br>
+  I build agents, retrieval systems and the occasional optimizer.
+</p>
+
+<br>
+
+<h3><code>likith@github ~ $ cat links.txt</code></h3>
+
+<p>
+  <a href="https://likithshetty.com"><strong>likithshetty.com</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://linkedin.com/in/likith-shetty">LinkedIn</a>
+  &nbsp;·&nbsp;
+  <a href="https://medium.com/@shettylikith.rajesh">Medium</a>
+  &nbsp;·&nbsp;
+  <a href="mailto:likithshetty188@gmail.com">Email</a>
+</p>
+
 </div>
